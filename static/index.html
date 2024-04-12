@@ -93,8 +93,31 @@
     reader.onload = function(e) {
       var contents = e.target.result;
       var json = JSON.parse(contents);
+      // 发送 JSON 数据到后台 Flask
+      // fetch('http://localhost:5000/upload', {
+      //       method: 'POST',
+      //       headers: {
+      //           'Content-Type': 'application/json'
+      //       },
+      //       body: JSON.stringify(json)
+      //   })
+      //   .then(response => {
+      //       if (response.ok) {
+      //           alert('JSON 数据已成功上传到后台 Flask！');
+      //           console.log('JSON 数据已成功上传到后台 Flask！');
+      //       } else {
+      //           alert('上传失败：' + response.statusText);
+      //           console.error('上传失败：', response.statusText);
+      //       }
+      //   })
+      //   .catch(error => {
+      //       alert('请求错误：' + error);
+      //       console.error('请求错误：', error);
+      //   });
+
       // 你现在可以使用json对象了
-      console.log(json);
+      alert("json loaded successfully");
+      console.log("json loaded successfully");
     };
     reader.readAsText(file);
     window.location.href = 'report.html';
