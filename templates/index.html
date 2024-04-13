@@ -16,15 +16,6 @@
   <meta name="theme-color" content="#1C1C1F">
   <!-- <link rel="stylesheet" href="https://cdn3.codesign.qq.com/icons/X2bzpZvRWkZkAaV/latest/iconfont.css">
   <script src="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.6.0/jquery.min.js"></script> -->
-  <script>
-    var _hmt = _hmt || [];
-    (function () {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?0a0cca83682044c405966961a1ff1b9b";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();
-  </script>
 </head>
 
 <body id="body">
@@ -52,9 +43,9 @@
       </div>
       <div class="first-stack-links">
         <a class="about-button" onclick="jmpreport()">上传json文件</a>
-        <a href="www.github.com" class="about-button social-button" target="_blank">
+        <!-- <a href="www.github.com" class="about-button social-button" target="_blank">
           <i class="heofont icon-github-line"></i>
-        </a>
+        </a> -->
       </div>
       
     </div>
@@ -91,20 +82,25 @@
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '/upload_json', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
+    // 添加请求完成的监听器
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                // 请求成功，展示成功消息
+                alert('POST 请求成功');
+                window.location.href = 'report.html';
+            } else {
+                // 请求失败，展示错误消息
+                alert('POST 请求失败');
+            }
+        }
+    };
     xhr.send(file);
-    //alert("json loaded successfully");
-    // var reader = new FileReader();
-    // reader.onload = function(e) {
-    //   var contents = e.target.result;
-    //   var json = JSON.parse(contents);
-    //   alert("json loaded successfully");
-    //   console.log("json loaded successfully");
-    // };
-    // reader.readAsText(file);
-    window.location.href = 'report.html';
+
+   
   }
 </script>
-<script src="/js/simpleParallax.min.js"></script>
-<script src="/js/main.js"></script>
+<!-- <script src="/js/simpleParallax.min.js"></script>
+<script src="/js/main.js"></script> -->
 
 </html>

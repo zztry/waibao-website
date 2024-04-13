@@ -1,5 +1,6 @@
 from flask import Flask,request,render_template
 from markupsafe import escape
+import processing
 
 app = Flask(__name__)
 
@@ -21,10 +22,16 @@ def add():
     return str(result)
 
 
+
+
+
 @app.route('/upload_json', methods=['POST'])
 def upload_file():
     # 从请求中获取 JSON 数据
     json_data = request.json
+    processing.analyze_file(json_data)
+    
+    print(type(json_data))
     
     # 在这里处理接收到的 JSON 数据
     print("I like coding")
