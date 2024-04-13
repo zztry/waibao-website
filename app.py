@@ -1,6 +1,7 @@
 from flask import Flask,request,render_template
 from markupsafe import escape
 import processing
+import output
 
 app = Flask(__name__)
 
@@ -29,12 +30,14 @@ def add():
 def upload_file():
     # 从请求中获取 JSON 数据
     json_data = request.json
-    processing.analyze_file(json_data)
-    
-    print(type(json_data))
-    
-    # 在这里处理接收到的 JSON 数据
-    print("I like coding")
+    #print(json_data)
+
+    #processing.analyze_file(json_data)
+
+    probs = processing.analyze_file(json_data)
+    print("No.1success")
+    output.word_output('90', probs)
+    print("No.2success")
     return 'File uploaded successfully!'
 
 if __name__ == '__main__':
