@@ -1,19 +1,20 @@
-from flask import Flask,request,render_template,redirect,url_for,jsonify
+from flask import Flask,request,render_template,jsonify,session
 from markupsafe import escape
 import processing
 import output
 
 app = Flask(__name__)
+app.secret_key = 'my_secret_key'
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/report.html')
+@app.route('/report')
 def report():
-    massage1 = request.args.get('massage1', '')
-    massage2 = request.args.get('massage2', '')
-    return render_template('report.html',massage1=massage1, massage2=massage2)
+   
+    massage2 = session.get('total_user')
+    return render_template('report.html', massage2=massage2)
 
 
 @app.route('/add', methods=['POST'])
@@ -27,9 +28,9 @@ def add():
 
 prob_list = ['blank_page_error', 
             'repeat_click_error', 
-            'poor_page_loading_problem',
-            'poor_first_interaction_problem', 
-            'poor_network_problem', 
+            'poor_loading_problem',
+            'unpleasant_first_interaction_problem', 
+            'network_latency_problem', 
             'lack_of_engaging_content', 
             'console_error',
             'console_warning',
@@ -52,9 +53,11 @@ def upload_file():
     output.word_output('90', probs)
     print("No.2success")
     num_prob_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+    score = 0
     total_user = len(probs)
     total_prob = 0
     for prob in probs:
+        score += prob[4]
         for p in prob[3]:
             total_prob += 1
             if p in prob_list:
@@ -63,9 +66,14 @@ def upload_file():
     print(num_prob_list)
     print(total_user)
     print(total_prob)
-    return jsonify({'massage1': 'File uploaded successfully!', 'massage2': '60'})
-    #return redirect(url_for('report',massage1='File uploaded successfully!', massage2="60"))
-    return render_template('report.html', massage1='File uploaded successfully!', massage2="60")
+    score = score/total_user #只保留1位小数
+    score = round(score,1)
+    session['total_user'] = str(score)
+    return "hello coder"
+
+    # return jsonify({'massage1': 'File uploaded successfully!', 'massage2': '60'})
+    # #return redirect(url_for('report',massage1='File uploaded successfully!', massage2="60"))
+    # return render_template('report.html', massage1='File uploaded successfully!', massage2="60")
 
 if __name__ == '__main__':
     app.run(port=5000,debug=True)

@@ -6,9 +6,6 @@ import check_error
 from flask import Flask, request
 
 
-
-
-
 def read_dict(data: dict) -> Iterator[dict]:
     
     for single_usr in data['data']:
@@ -36,12 +33,14 @@ def read_dict(data: dict) -> Iterator[dict]:
 
 
 
-def check_issuetype(usr_value: dict) -> tuple[int, str,str, list[str]]:
+def check_issuetype(usr_value: dict) -> tuple[int, str,str, list[str],float]:
     event: str = usr_value["event"].lower()
     id: int = usr_value["ID"]
     url: str = usr_value["url"]
     # error_count: int = usr_value["errorCount"]
-    return (id, event, url,check_error.check_all_error(usr_value))
+    errors, eval_score = check_error.check_all_error(usr_value)
+    print("Usr {} experience {}%".format(id, eval_score))
+    return (id, event, url, errors,eval_score)
     # pass
 
 #issue 3
