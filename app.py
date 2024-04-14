@@ -207,7 +207,7 @@ def upload_file():
 
 
     sorted_items = sorted(pro_num_dict.items(), key=lambda x: x[1], reverse=True)
-
+    suggestion +="针对上述提到的问题给出的开发者建议如下（详情见报告）：<br>"
     for name, value in sorted_items:
         if value != 0:
             if nowlen < len(pro_num_dict.items()) / 4:
@@ -230,9 +230,6 @@ def upload_file():
 
     return "hello coder"
 
-    # return jsonify({'massage1': 'File uploaded successfully!', 'massage2': '60'})
-    # #return redirect(url_for('report',massage1='File uploaded successfully!', massage2="60"))
-    # return render_template('report.html', massage1='File uploaded successfully!', massage2="60")
 
 if __name__ == '__main__':
     app.run(port=5000,debug=True)
