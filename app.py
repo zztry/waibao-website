@@ -177,7 +177,7 @@ def upload_file():
 
     for name, value in pro_num_dict.items():
         if value != 0:
-            suggestion += f"{i1}. "+ answer_list[name] + "<br>"
+            #suggestion += f"{i1}. "+ answer_list[name] + "<br><br>"
             suggestion_output += f"{i1}. "+ answer_list[name] + "\n\t"
             i1 += 1
 
@@ -211,7 +211,8 @@ def upload_file():
     for name, value in sorted_items:
         if value != 0:
             if nowlen < len(pro_num_dict.items()) / 4:
-                problem_analysis += f"{i3}. {name}发生的概率是<b>{round(value / total_user, 3)}</b>。<br>{qusetion_anylist[name]}<br>"
+                problem_analysis += f"{i3}. {name}发生的概率是<b>{round(value / total_user, 3)}</b>。<br>{qusetion_anylist[name]}<br><br>"
+                suggestion += f"{i3}. "+ answer_list[name] + "<br><br>"
                 nowlen += 1
                 i3 += 1
 
