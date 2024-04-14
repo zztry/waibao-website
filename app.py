@@ -198,6 +198,8 @@ def upload_file():
 
     for name, value in pro_num_dict.items():
         if value != 0:
+            #prob_list.index(name) 问题的序号
+            
             problem_analysis_output += f"{i2}. "+name+"发生的概率是"+f"{round(pro_num_dict[name]/total_user, 3)}"+"。具体分析如下："+ qusetion_anylist[name] + "\n\t"
             i2 += 1
 
@@ -211,7 +213,9 @@ def upload_file():
     for name, value in sorted_items:
         if value != 0:
             if nowlen < len(pro_num_dict.items()) / 4:
-                problem_analysis += f"{i3}. {name}发生的概率是<b>{round(value / total_user, 3)}</b>。<br>{qusetion_anylist[name]}<br><br>"
+                inde = prob_list.index(name)
+                na = cn_prob_list[inde]
+                problem_analysis += f"{i3}. {na}发生的概率是<b>{round(value / total_user, 3)}</b>。<br>{qusetion_anylist[name]}<br><br>"
                 suggestion += f"{i3}. "+ answer_list[name] + "<br><br>"
                 nowlen += 1
                 i3 += 1
