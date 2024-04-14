@@ -39,7 +39,7 @@ def check_issuetype(usr_value: dict) -> tuple[int, str,str, list[str],float]:
     url: str = usr_value["url"]
     # error_count: int = usr_value["errorCount"]
     errors, eval_score = check_error.check_all_error(usr_value)
-    print("Usr {} experience {}%".format(id, eval_score))
+    #print("Usr {} experience {}%".format(id, eval_score))
     return (id, event, url, errors,eval_score)
     # pass
 
@@ -52,7 +52,7 @@ def issue_process(issue: tuple[int, str, str,list[str]]) -> None:
             # 冠词
             article += "n"
 
-        print("User {} potentially encountered {} {} while performing {} event.".format(issue[0], article, iss.replace('_', ' '), issue[1]))
+        #print("User {} potentially encountered {} {} while performing {} event.".format(issue[0], article, iss.replace('_', ' '), issue[1]))
     # pass
 
 #4

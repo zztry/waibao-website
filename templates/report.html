@@ -14,6 +14,11 @@
   <link rel="apple-touch-icon-precomposed" sizes="180x180" href="{{ url_for('static', filename='/img/icon.webp') }}">
   <meta name="description" content="做更好的数据分析">
   <meta name="theme-color" content="#1C1C1F">
+  <!-- 引入 echarts.js -->
+  <script src="https://cdn.staticfile.net/echarts/4.3.0/echarts.min.js"></script>
+  <script>
+    var data1 = {{ data_list|tojson | safe }};
+  </script>
   <!-- <link rel="stylesheet" href="https://cdn3.codesign.qq.com/icons/X2bzpZvRWkZkAaV/latest/iconfont.css">
   <script src="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.6.0/jquery.min.js"></script> -->
 </head>
@@ -35,19 +40,47 @@
   
 
   
-    <div class="report-head" style="width: 1400px; height: 1000px;">
-        <div class="left-Introduce" style="display: block; position:relative; top:70px; width: 350px;">
-            <div class="title-group" style="display: block; position: relative;; top: 0px; left: 0px; ">
-              <span class="title" style="font-size: 30px;">WEBSITE REPORT</span>
-            </div>
-            <div class="discription" style="display: block; ">
-              <span class="discription-text">网站评分：<br><br><br><span class="inline-word" style="font-size: 70px;">{{ massage2 }}</span></span>
-            </div>
-            <div class="first-stack-links" style="display: block; ">
-              <a href="https://blog.zhheo.com/about/" class="about-button" target="_blank">下载报告</a>
-            </div>
+    <div class="report-head" style="width: 1400px; height: 1000px; display: table; ">
+      <div class="content" 
+        style="display: block; position:relative;  top:70px; float:right; width: 70%; ">
+        <span class="discription-text">用户出现的问题统计：</span><br>
+        <span class="discription-text" style="font-size: 20px; color: rgb(13, 96, 198);">{{ pro_num_dict }}</span>
+        <div id="main" style="width: 600px;height:400px;"></div>
+          <script type="text/javascript">
+          // 基于准备好的dom，初始化echarts实例
+          var myChart = echarts.init(document.getElementById('main'));
+          myChart.setOption({
+            series : [
+                {
+                    name: '访问来源',
+                    type: 'pie',    // 设置图表类型为饼图
+                    radius: '55%',  // 饼图的半径，外半径为可视区尺寸（容器高宽中较小一项）的 55% 长度。
+                    data: data1
+                    // data:[          // 数据数组，name 为数据项名称，value 为数据项值
+                    //     {value:235, name:'视频广告'},
+                    //     {value:274, name:'联盟广告'},
+                    //   ]
+                  }
+              ]
+          })
+      </script>
+        <span class="discription-text">开发者建议：</span><br>
+        <span class="discription-text" style="font-size: 17px; color: rgb(0, 0, 0);">{{ suggestion|safe }}</span><br>
+      </div>
+      <div class="left-Introduce" 
+        style="display: block; position:relative; top: 70px; width: 30%; ">
+        <div class="title-group" style="display: block; position: relative;; top: 0px; left: 0px; ">
+          <span class="title" style="font-size: 30px;">WEBSITE REPORT</span>
+        </div>
+        <div class="discription" style="display: block; ">
+          <span class="discription-text">网站评分：<br><br><br><span class="inline-word" style="font-size: 70px;">{{ score }}</span></span>
+        </div>
+        <div class="first-stack-links" style="display: block; ">
+          <a href='/download' class="about-button" target="_blank">下载报告</a>
+        </div>
 
-        </div>  
+      </div>  
+        
     </div>
 
     
