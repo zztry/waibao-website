@@ -134,14 +134,14 @@ def upload_file():
     for name, value in pro_num_dict.items():
         if value != 0:
             suggestion += f"{i1}. "+ answer_list[name] + "<br>"
-            suggestion_output += f"{i1}. "+ answer_list[name] + "\n"
+            suggestion_output += f"{i1}. "+ answer_list[name] + "\n"+"\t"
             i1 += 1
 
     output.word_output(str(score), probs, suggestion_output)
 
     #把pro_num_dict的次数转换成百分比，除以total_user
     for key in pro_num_dict:
-        pro_num_dict[key] = round(pro_num_dict[key]/total_user*100, 1)
+        pro_num_dict[key] = round(pro_num_dict[key]/total_user*100, 1)#问题名，百分比
 
     
 
