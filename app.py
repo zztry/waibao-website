@@ -1,5 +1,6 @@
-from flask import Flask,request,render_template,session,send_file
+from flask import Flask,request,render_template,session,send_file,jsonify
 import processing
+import json
 import output
 
 app = Flask(__name__)
@@ -14,7 +15,8 @@ def report():
     score = session.get('score')
     return render_template('report.html', score=score, pro_num_dict=session.get('pro_num_dict'),
                            data_list=session.get('data_list')
-                           , suggestion=session.get('suggestion'))
+                           , suggestion=session.get('suggestion')
+                           ,problem_analysis=session.get('problem_analysis'))
 
 
 @app.route('/add', methods=['POST'])
@@ -81,6 +83,36 @@ answer_list={
 
 }
 
+
+
+qusetion_anylist={
+    #1.出现空白页面错误
+    'blank_page_error':'空白页面错误的出现可能由于多种原因，包括网络连接问题、服务器故障、页面代码错误或浏览器问题等，这些因素都可能导致页面无法正常加载。',
+    #2控制台报错
+    'console_error':'控制台报错通常出现在浏览器的开发者工具中，表示页面中的 JavaScript 代码出现了错误。这种错误可能是由于语法错误、未定义的变量、函数调用问题等引起的。',
+    #3控制台警告
+    'console_warning':'控制台警告表示页面中的 JavaScript 代码出现了警告信息。这些警告可能是由于代码中一些潜在问题或不规范的写法引起的。',
+    #4高点击延迟
+    'high_click_latency_problem':'高点击延迟可能是由于页面加载速度慢、事件处理逻辑复杂或网络通信延迟等原因引起的。',
+    #5高渲染延迟
+    'high_rendering_latency_problem':'高渲染延迟问题可能是由于页面结构复杂、资源加载过多、CSS 或 JavaScript 代码执行效率低下等原因引起的。',
+    #6缺乏引人注意的内容
+    'lack_of_engaging_content':'页面不具有吸引力问题的出现可能是由于内容数量不足、质量不高、设计不佳或缺乏交互性等因素造成的。',
+    #7网络通信延迟
+    'network_latency_problem':'网络通信延迟问题可能是由于网络连接不稳定、服务器响应时间长、网络拥塞或数据传输量过大等原因造成的。',
+    #8页面加载错误
+    'page_loading_error':'页面加载错误问题可能是由于网络问题、服务器故障、页面资源加载失败、JavaScript 代码错误等多种原因引起的。',
+    #9页面内容或文本出现错误
+    'page_text_error':'页面内容或文本出现错误可能是由于数据源问题、页面代码问题、字符编码问题或其他原因引起的。',
+    #10页面加载质量差
+    'poor_loading_problem':'页面加载质量差可能是由于网络连接不稳定、服务器响应时间长、页面资源加载过多或过大、JavaScript 代码执行效率低下等原因造成的。',
+    #11重复点击某个元素
+    'repeat_click_error':'用户多次重复点击同一元素可能是由于页面交互逻辑设计不佳，未能有效处理用户的快速点击行为，或者是由于用户体验较差，用户感知不到他们的点击操作已经被处理而导致的。',
+    #12用户首次与网站交互时感到不愉快
+    'unpleasant_first_interaction_problem':'用户首次使用网站体验感较差可能是由于页面加载速度过慢、界面设计不吸引人、内容不清晰或交互过程不流畅等原因导致的。'
+
+}
+
 #下载文件
 @app.route('/download', methods=['GET'])
 def download():
@@ -93,12 +125,24 @@ def download():
 
 @app.route('/upload_json', methods=['POST'])
 def upload_file():
-    # 从请求中获取 JSON 数据
-    json_data = request.json
-    #print(json_data)
+    files = request.files.getlist('file')  # 获取名为 'file' 的所有文件
 
-    probs = processing.analyze_file(json_data)
-    print("No.1success")
+    print(len(files))
+    probs = []
+    if len(files) == 0:
+        print("No file uploaded")
+        return "No file uploaded"
+    for file in files:
+        file.content = file.read()
+        json_data = json.loads(file.content)
+        print("1111")
+        probs += processing.analyze_file(json_data)
+    # # 从请求中获取 JSON 数据
+    # json_data = request.json
+    # #print(json_data)
+   
+    # probs = processing.analyze_file(json_data)
+    #print("No.1success")
     num_prob_list = [0,0,0,0,0,0,0,0,0,0,0,0]
     score = 0
     total_user = len(probs)
@@ -113,11 +157,11 @@ def upload_file():
     score = score/total_user #只保留1位小数
     score = round(score,1)
     
-    print("No.2success")
+    #print("No.2success")
      
-    print(num_prob_list) #每个问题出现的次数
-    print(total_user)   #用户总数
-    print(total_prob)   #问题总数
+    #print(num_prob_list) #每个问题出现的次数
+    #print(total_user)   #用户总数
+    #print(total_prob)   #问题总数
     pro_num_dict = dict(zip(prob_list, num_prob_list)) #<问题名，次数>
     cn_pro_num_dict = dict(zip(cn_prob_list, num_prob_list)) #<问题名cn，次数>
     
@@ -134,14 +178,46 @@ def upload_file():
     for name, value in pro_num_dict.items():
         if value != 0:
             suggestion += f"{i1}. "+ answer_list[name] + "<br>"
-            suggestion_output += f"{i1}. "+ answer_list[name] + "\n"+"\t"
+            suggestion_output += f"{i1}. "+ answer_list[name] + "\n\t"
             i1 += 1
 
-    output.word_output(str(score), probs, suggestion_output)
+    
+    num=0
+    for name, value in pro_num_dict.items():
+        if value != 0:
+           num+=1
+    #num表示一共出现几种问题
 
-    #把pro_num_dict的次数转换成百分比，除以total_user
-    for key in pro_num_dict:
-        pro_num_dict[key] = round(pro_num_dict[key]/total_user*100, 1)#问题名，百分比
+    problem_analysis = ''
+    problem_analysis_output = ''
+    problem_analysis+="经过算法分析共识别出"+ f"{num} " + "种可能的问题，这里按问题发生概率大小展示<b>部分</b>问题如下（详情见报告）："+ "<br>"
+    problem_analysis_output+="经过算法分析共识别出"+ f"{num} " + "种可能的问题，如下："+ "\n\t"
+
+    
+    i2=1
+
+    for name, value in pro_num_dict.items():
+        if value != 0:
+            problem_analysis_output += f"{i2}. "+name+"发生的概率是"+f"{round(pro_num_dict[name]/total_user, 3)}"+"。具体分析如下："+ qusetion_anylist[name] + "\n\t"
+            i2 += 1
+
+    ##New 输出部分结果4.15   02：04
+    i3=1
+    nowlen=1
+
+
+    sorted_items = sorted(pro_num_dict.items(), key=lambda x: x[1], reverse=True)
+
+    for name, value in sorted_items:
+        if value != 0:
+            if nowlen < len(pro_num_dict.items()) / 4:
+                problem_analysis += f"{i3}. {name}发生的概率是<b>{round(value / total_user, 3)}</b>。<br>{qusetion_anylist[name]}<br>"
+                nowlen += 1
+                i3 += 1
+
+    output.word_output(str(score), probs, suggestion_output,problem_analysis_output)
+
+
 
     
 
@@ -149,6 +225,7 @@ def upload_file():
     session['pro_num_dict'] = pro_num_dict
     session['data_list'] = data_list
     session['suggestion'] = suggestion
+    session['problem_analysis'] = problem_analysis
 
     return "hello coder"
 

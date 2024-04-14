@@ -9,7 +9,7 @@ import os
 import processing
 
 
-def word_output(score, problems: list[tuple[int, str, str, list[str],float]] , suggestion: str):
+def word_output(score, problems: list[tuple[int, str, str, list[str],float]] , suggestion: str, problem_analysis: str):
     doc = Document()
     head = doc.add_paragraph('用户体验评分报告')
     run1 = head.runs[0]
@@ -43,6 +43,13 @@ def word_output(score, problems: list[tuple[int, str, str, list[str],float]] , s
     run3.font.size = Pt(24)
     run3.font.color.rgb = RGBColor(54, 95, 145)
 
+    para4 = doc.add_paragraph(problem_analysis)
+    run5 = para4.runs[0]
+    run5.font.name = '楷体'
+    run5._element.rPr.rFonts.set(qn('w:eastAsia'), '楷体')
+    run5.font.size = Pt(16)
+    para4.paragraph_format.first_line_indent = docx.shared.Inches(0.5)
+
     #三、开发者建议
     doc.add_paragraph("")
     para2 = doc.add_paragraph("三、开发者建议")
@@ -58,6 +65,8 @@ def word_output(score, problems: list[tuple[int, str, str, list[str],float]] , s
     run4._element.rPr.rFonts.set(qn('w:eastAsia'), '楷体')
     run4.font.size = Pt(16)
     para3.paragraph_format.first_line_indent = docx.shared.Inches(0.5)
+
+
 
     for problem in problems:
         print(problem)

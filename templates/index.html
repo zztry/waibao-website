@@ -42,7 +42,13 @@
         <span class="discription-text">分析网站用户使用<span class="inline-word">数据，</span><br>为开发者提供最好的用户<span class="inline-word">体验报告。</span></span>
       </div>
       <div class="first-stack-links">
-        <a class="about-button" onclick="jmpreport()">上传json文件</a>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" id="jsonFile" style="display: none;" 
+                onchange="handleFileSelect(event)" multiple>
+                <a class="about-button" onclick="jmpreport()">上传json文件</a>
+        </form>
+        
+        
         <!-- <a href="www.github.com" class="about-button social-button" target="_blank">
           <i class="heofont icon-github-line"></i>
         </a> -->
@@ -68,20 +74,33 @@
 
 </body>
 <!-- 隐藏的文件输入元素 -->
-<input type="file" id="jsonFile" accept=".json" style="display: none;" onchange="handleFileSelect(event)">
+<!-- <form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" id="jsonFile" style="display: none;" 
+        onchange="handleFileSelect(event)" multiple>
+</form> -->
+
 <script>
   function jmpreport() {
     document.getElementById('jsonFile').click();
   }
   function handleFileSelect(event) {
-    var file = event.target.files[0];
-    if (!file) {
+    var files = event.target.files;
+    if (!files) {
       alert('没有选择文件');
       return;
     }
+    var fromData = new FormData();
+    
+    for(var i = 0; i < files.length; i++) {
+      fromData.append('file', files[i]);
+      //alert(fromData.get('file'));
+    }
+    //alert('选择了' + files.length + '个文件');
+    
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '/upload_json', true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
+    // xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(fromData);
     // 添加请求完成的监听器
     xhr.onreadystatechange = function() {
         if (xhr.readyState === XMLHttpRequest.DONE) {
@@ -95,7 +114,7 @@
             }
         }
     };
-    xhr.send(file);
+    
 
    
   }
