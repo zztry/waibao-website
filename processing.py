@@ -65,7 +65,7 @@ def analyze_file(data: dict) -> list[tuple[int, str, str, list[str]]]:
         # for key in usr_value.keys():
             # attr[key] |= usr_value[key]
         issue = check_issuetype(usr_value)
-        issue_process(issue)
+        #issue_process(issue)
         issues.append(issue)
     return issues
 
