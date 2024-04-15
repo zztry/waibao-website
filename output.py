@@ -9,7 +9,7 @@ import os
 import processing
 
 
-def word_output(score, problems: list[tuple[int, str, str, list[str],float]] , suggestion: str, problem_analysis: str):
+def word_output(score, problems: list[tuple[int, str, str, list[str], float]], suggestion: str, problem_analysis: str):
     doc = Document()
     head = doc.add_paragraph('用户体验评分报告')
     run1 = head.runs[0]
@@ -43,14 +43,17 @@ def word_output(score, problems: list[tuple[int, str, str, list[str],float]] , s
     run3.font.size = Pt(24)
     run3.font.color.rgb = RGBColor(54, 95, 145)
 
-    para4 = doc.add_paragraph(problem_analysis)
-    run5 = para4.runs[0]
-    run5.font.name = '楷体'
-    run5._element.rPr.rFonts.set(qn('w:eastAsia'), '楷体')
-    run5.font.size = Pt(16)
-    para4.paragraph_format.first_line_indent = docx.shared.Inches(0.5)
+    problem_analysis_split = problem_analysis.split("\n\t")
+    for part in problem_analysis_split:
+        if len(part) != 0:
+            para4 = doc.add_paragraph(part)
+            run5 = para4.runs[0]
+            run5.font.name = '楷体'
+            run5._element.rPr.rFonts.set(qn('w:eastAsia'), '楷体')
+            run5.font.size = Pt(16)
+            para4.paragraph_format.first_line_indent = docx.shared.Inches(0.5)
 
-    #三、开发者建议
+    # 三、开发者建议
     doc.add_paragraph("")
     para2 = doc.add_paragraph("三、开发者建议")
     run3 = para2.runs[0]
@@ -59,23 +62,20 @@ def word_output(score, problems: list[tuple[int, str, str, list[str],float]] , s
     run3.font.size = Pt(24)
     run3.font.color.rgb = RGBColor(54, 95, 145)
 
-    para3 = doc.add_paragraph(suggestion)
-    run4 = para3.runs[0]
-    run4.font.name = '楷体'
-    run4._element.rPr.rFonts.set(qn('w:eastAsia'), '楷体')
-    run4.font.size = Pt(16)
-    para3.paragraph_format.first_line_indent = docx.shared.Inches(0.5)
-
-
-
-    for problem in problems:
-        print(problem)
+    suggestions = suggestion.split("\n\t")
+    for part in suggestions:
+        if len(part) != 0:
+            para3 = doc.add_paragraph(part)
+            run4 = para3.runs[0]
+            run4.font.name = '楷体'
+            run4._element.rPr.rFonts.set(qn('w:eastAsia'), '楷体')
+            run4.font.size = Pt(16)
+            para3.paragraph_format.first_line_indent = docx.shared.Inches(0.5)
 
     output_name = 'output_report.docx'
     doc.save(output_name)
-    print("111")
+    #print("111")
     return doc
-
 
 
 # def convert2pdf(input_path, output_path):
@@ -92,11 +92,11 @@ def word_output(score, problems: list[tuple[int, str, str, list[str],float]] , s
 #     finally:
 #         word_app.Quit()
 
-#testpath: list[str] = ['/Users/qinhaonan/Desktop/NJU_FILES/服务外包/data_sets/log3-new.json',
+# testpath: list[str] = ['/Users/qinhaonan/Desktop/NJU_FILES/服务外包/data_sets/log3-new.json',
 #                       '/Users/qinhaonan/Desktop/NJU_FILES/服务外包/data_sets/log2-new.json']
 
 input_path = os.getcwd() + '/output_docx.docx'
 output_path = os.getcwd() + '/output_pdf'
 
-#probs = processing.analyze_file(testpath)
-#word_output('90', probs)
+# probs = processing.analyze_file(testpath)
+# word_output('90', probs)
