@@ -2,6 +2,7 @@ from flask import Flask,request,render_template,session,send_file,jsonify
 import processing
 import json
 import output
+import ai
 
 app = Flask(__name__)
 app.secret_key = 'my_secret_key'
@@ -17,6 +18,22 @@ def report():
                            data_list=session.get('data_list')
                            , suggestion=session.get('suggestion')
                            ,problem_analysis=session.get('problem_analysis'))
+
+@app.route('/llm')
+def llm():
+    return render_template('llmQA.html')
+
+
+@app.route('/submit_message', methods=['POST'])
+def submit_message():
+    user_message = request.json['message']
+    print(user_message)
+    try:
+        tmp_response = ai.chatgpt(user_message)
+    except:
+        tmp_response = "这会没开vpn，sorry"
+    
+    return jsonify({'status': 'success', 'response': tmp_response})
 
 
 @app.route('/add', methods=['POST'])
@@ -178,12 +195,14 @@ def upload_file():
     for name, value in pro_num_dict.items():
         if value != 0:
             #suggestion += f"{i1}. "+ answer_list[name] + "<br><br>"
+            #word文档
             suggestion_output += f"{i1}. "+ answer_list[name] + "\n\t"
             i1 += 1
 
     
     num=0
     for name, value in pro_num_dict.items():
+        
         if value != 0:
            num+=1
     #num表示一共出现几种问题
@@ -191,6 +210,7 @@ def upload_file():
     problem_analysis = ''
     problem_analysis_output = ''
     problem_analysis+="经过算法分析共识别出"+ f"{num} " + "种可能的问题，这里按问题发生概率大小展示<b>部分</b>问题如下（详情见报告）："+ "<br>"
+    #word文档
     problem_analysis_output+="经过算法分析共识别出"+ f"{num} " + "种可能的问题，如下："+ "\n\t"
 
     
@@ -201,6 +221,7 @@ def upload_file():
             #prob_list.index(name) 问题的序号
             inde = prob_list.index(name)
             na = cn_prob_list[inde]
+            #word文档
             problem_analysis_output += f"{i2}. "+na+"发生的概率是"+f"{round(pro_num_dict[name]/total_user, 3)}"+"。具体分析如下："+ qusetion_anylist[name] + "\n\t"
             i2 += 1
 
@@ -210,6 +231,7 @@ def upload_file():
 
 
     sorted_items = sorted(pro_num_dict.items(), key=lambda x: x[1], reverse=True)
+    #网页上的
     suggestion +="针对上述提到的问题给出的开发者建议如下（详情见报告）：<br>"
     for name, value in sorted_items:
         if value != 0:
@@ -218,6 +240,9 @@ def upload_file():
                 na = cn_prob_list[inde]
                 problem_analysis += f"{i3}. {na}发生的概率是<b>{round(value / total_user, 3)}</b>。<br>{qusetion_anylist[name]}<br><br>"
                 suggestion += f"{i3}. "+ answer_list[name] + "<br><br>"
+                #tmp_sug = ai.chatgpt("给出网页发生"+na+"错误时，对网页开发者的建议，在200字左右,分条列好")
+                #print(tmp_sug)
+                #suggestion += f"{i3}. "+ tmp_sug + "<br><br>"
                 nowlen += 1
                 i3 += 1
 

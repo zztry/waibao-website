@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数位之舟 - 用数据分析赋能网页</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='/img/icon.webp') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='/img/icon.webp') }}">
+  <meta name="apple-mobile-web-app-title" content="Digits">
+  <link rel="bookmark" href="{{ url_for('static', filename='/img/icon.webp') }}">
+  <link rel="apple-touch-icon-precomposed" sizes="180x180" href="{{ url_for('static', filename='/img/icon.webp') }}">
+  <meta name="description" content="做更好的数据分析">
+  <meta name="theme-color" content="#1C1C1F">
+  <!-- 引入 echarts.js -->
+  <script src="https://cdn.staticfile.net/echarts/4.3.0/echarts.min.js"></script>
+  <script>
+    function sendMessage() {
+        const inputField = document.getElementById('userInput');
+        const chatBox = document.querySelector('.chat-box');
+        const message = inputField.value.trim();
+
+        if (message) {
+            //显示用户的消息
+            displayMessage('user', message);
+            //清空输入框
+            inputField.value = '';
+
+            // 准备发送到服务器的数据
+            const data = { message: message };
+
+            // 发送异步请求到Flask后台
+            fetch('/submit_message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data), // 将JavaScript对象转换为JSON字符串
+            })
+            .then(response => response.json()) // 解析返回的JSON数据
+            .then(data => {
+                // 处理服务器响应
+                if (data.status === 'success') {
+                    // 显示机器人的回复
+                    displayMessage('bot', data.response);
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+
+            
+        }
+    }
+
+    function displayMessage(sender, message) {
+        const chatBox = document.querySelector('.chat-box');
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
+        messageElement.textContent = message;
+
+        if (sender === 'user') {
+            messageElement.classList.add('user-message');
+        } else {
+            messageElement.classList.add('bot-message');
+        }
+        //messageElement.classList.add('bot-message');
+        chatBox.appendChild(messageElement);
+
+        const emptyline = document.createElement('div');
+        emptyline.style.height = '0.3cm';
+        chatBox.appendChild(emptyline);
+
+        chatBox.scrollTop = chatBox.scrollHeight; // 滚动到底部
+    }
+
+        // 添加CSS样式区分用户和机器人的消息
+    document.addEventListener('DOMContentLoaded', () => {
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = `
+            .user-message { color: blue; }
+            .bot-message { color: green; }
+        `;
+        document.head.appendChild(style);
+    });
+
+    function handleKeyPress(event) {
+        // 检查按下的键是否是Enter键
+        if (event.keyCode === 13 || event.key === 'Enter') {
+            // 阻止表单的默认提交行为
+            event.preventDefault();
+            // 调用sendMessage函数发送消息
+            sendMessage();
+        }
+    }
+
+
+  </script>
+  
+  <style>
+    .chat-container {
+        width: 100%; /* Make chat container take full width */
+        margin: 30px 0; /* Remove the auto margin */
+        border: none; /* Remove the border */
+    }
+    
+    .chat-header {
+        background-color: #f1f1f1;
+        padding: 10px;
+        text-align: center;
+    }
+    
+    .chat-box {
+        height: 650px;
+        overflow-y: auto;
+        padding: 10px;
+        background-color: #f9f9f9;
+    }
+    
+    .chat-input {
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        width: 100%; /* Make chat input take full width */
+        box-sizing: border-box; /* Ensure padding is included in width calculation */
+    }
+    
+    .chat-input input {
+        flex-grow: 1;
+        padding: 10px; /* Increase padding for a larger input box */
+        font-size: 16px; /* Increase font size */
+    }
+    
+    .chat-input button {
+        padding: 10px 20px; /* Increase padding for the button */
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px; /* Increase font size */
+    }
+  </style>
+
+</head>
+
+<body id="body">
+  <div class="nav">
+    <div class="nav-content">
+      <div class="nav-left">
+        <a href="/" class="site-logo">
+          <img src="{{ url_for('static', filename='/img/icon.webp') }}" alt="logo" class="site-logo-img">
+          <span class="site-name">Digits</span>
+        </a>
+      </div>
+      <div class="nav-center">
+        <a href="/" class="nav-item">回到首页</a>
+      </div>
+    </div>
+  </div>
+  
+
+  
+    <div class="report-head" style="width: 1400px; height: 1000px; display: table; ">
+      <div class="content" 
+        style="display: block; position:relative;  top:70px; float:right; width: 75%; "> 
+        <!-- <span class="discription-text">用户出现的问题统计：</span><br>
+        <span class="discription-text" style="font-size: 22px; color: rgb(0, 0, 0); font-weight:140;
+        line-height:32px; letter-spacing:0px; font-family: 'STKaiti', sans-serif; ">{{ problem_analysis|safe }}</span> -->
+        <!-- <div id="main" style="width: 600px;height:400px;"></div> -->
+        <div class="chat-container" style="display: block; position:relative;">
+            <div class="chat-header" style="display: block; position:relative;">
+              <h3>gpt-3.5-turbo</h3>
+            </div>
+            <div class="chat-box" style="display: block; position:relative;">
+              <!-- 这里将显示用户和机器人的对话 -->
+            </div>
+            <!-- 按钮和输入框 -->
+            <div class="chat-input" style="display: block; position:relative;">
+              <input type="text" id="userInput" placeholder="输入你的问题..." style="width: 90%;" onkeydown="handleKeyPress(event)">
+              <button onclick="sendMessage()">发送</button>
+            </div>
+        </div>
+        
+        <!-- <span class="discription-text">开发者建议：</span><br>
+        <span class="discription-text" style="font-size: 22px; color: rgb(0, 0, 0); font-weight:120;
+        line-height:32px; letter-spacing:0px; font-family: 'STKaiti', sans-serif; ">{{ suggestion|safe }}</span> -->
+        
+      </div> 
+      <div class="left-Introduce" 
+        style="display: block; position:relative; top: 70px; width: 25%; ">
+        <div class="title-group" style="display: block; position: relative;; top: 0px; left: 0px; ">
+          <span class="title" style="font-size: 30px;">网页开发QA</span>
+        </div>
+        <div class="discription" style="display: block; ">
+          <span class="discription-text" style="font-size: 18px; font-family: KaiTi; font-weight: normal;">本站已经接入大模型，经web开发相关领域知识微调，帮您精准解答问题<br><br><br><span class="inline-word" style="font-size: 30px;">{{ score }}</span></span>
+        </div>
+        <!-- <div class="first-stack-links" style="display: block; ">
+          <a href='/download' class="about-button" target="_blank">下载报告</a>
+        </div> -->
+
+      </div>  
+        
+    </div>
+
+    
+    
+  </div>
+
+
+</body>
+</html>
